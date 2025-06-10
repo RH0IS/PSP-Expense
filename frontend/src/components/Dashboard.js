@@ -69,7 +69,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <header>
-                <h2 className="dashboard-title">PSP EXPENSE MANAGEMENT</h2>
+                <h2 className="dashboard-title">EXPENSE MANAGEMENT TRACKER</h2>
             </header>
 
             {/* Pie Chart with Legend */}

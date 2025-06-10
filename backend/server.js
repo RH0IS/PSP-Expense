@@ -37,6 +37,11 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 
 // --- API Endpoints ---
 
+// -- Root Route --
+app.get('/', (req, res) => {
+  res.send('Welcome to the Expense Tracker API!');
+});
+
 // -- Users --
 app.post('/users', async (req, res) => {
   const user = new User(req.body);

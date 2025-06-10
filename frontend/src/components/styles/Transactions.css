@@ -1,18 +1,65 @@
+/* Transactions Container */
 .transactions-container {
-    max-width: 900px;
+    max-width: 950px;
     margin: 0 auto;
-    padding: 30px 20px;
+    padding: 30px 15px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.card {
-    border: none;
-    border-radius: 10px;
+/* Back Button */
+.btn-outline-secondary {
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    border-radius: 50px;
+}
+
+/* Card Styles */
+.transaction-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.transaction-card {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.transaction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-title {
     font-weight: 600;
     font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* Form Styling */
+.form-select, .form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 50px;
+    padding: 8px 15px;
+    font-weight: 500;
 }
 
 .btn-success {
@@ -24,25 +71,204 @@
     background-color: #218838;
 }
 
-.btn-outline-danger {
-    border: 1px solid #dc3545;
-}
-
-.btn-outline-danger:hover {
-    background-color: #dc3545;
-    color: #fff;
-}
-
-.list-group-item {
+.btn-warning {
+    background-color: #ffc107;
     border: none;
-    border-bottom: 1px solid #eee;
-    padding: 1rem 0.75rem;
 }
 
-.fw-semibold {
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-outline-secondary {
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    padding: 8px 15px;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border: none;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5); /* Darker background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem; /* Reduced padding for better spacing */
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Slightly less shadow */
+    animation: fadeIn 0.15s ease-out forwards; /* Faster animation */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-y: auto;
+    max-height: 90vh;
+    position: relative;
+    padding-right: 1.5rem; /* Add space on the right to prevent inputs from touching the edge */
+}
+
+/* Keyframe for faster fade-in effect */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Close button */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    font-weight: 700;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #e74c3c; /* Red on hover */
+}
+
+/* Form styling */
+.user-form h3 {
+    margin-bottom: 1.25rem;
     font-weight: 600;
+    color: #333;
+    text-align: center;
 }
 
-.fw-bold {
-    font-weight: bold;
+.user-form .form-group {
+    margin-bottom: 1.25rem;
+    padding-right: 1.5rem; /* Space on the right to prevent inputs from touching the edge */
+}
+
+.user-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.user-form input,
+.user-form select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1.8px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline-offset: 2px;
+    margin-top: 0rem; 
+}
+
+.user-form input:focus,
+.user-form select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Buttons styling */
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.25s ease;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    margin-left: 0.75rem;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+
+.btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem; /* Reduced padding */
+        max-width: 95%;
+    }
+}
+
+/* Transactions List */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Mobile and Tablet Responsiveness */
+@media (max-width: 768px) {
+    .transaction-cards-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .transaction-card {
+        width: 100%;
+    }
 }

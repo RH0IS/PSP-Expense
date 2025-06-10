@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import './styles/Transactions.css'; // custom styles
+import { useParams, useNavigate } from 'react-router-dom';
+import './styles/Transactions.css';
 
 const Transactions = () => {
     const { userId } = useParams();
+    const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
-    const [type, setType] = useState('income');
+    const [type, setType] = useState('income');  // default to income
     const [category, setCategory] = useState('');
     const [amount, setAmount] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState(null);
 
     useEffect(() => {
         fetchTransactions();
@@ -25,11 +28,12 @@ const Transactions = () => {
             userId,
             type,
             category,
-            amount: Number(amount)
+            amount: Number(amount),
         });
         setCategory('');
         setAmount('');
         fetchTransactions();
+        closeModal();
     };
 
     const deleteTransaction = async (id) => {
@@ -37,58 +41,140 @@ const Transactions = () => {
         fetchTransactions();
     };
 
+    const openModal = (transaction = null) => {
+        if (transaction) {
+            setEditingTransaction(transaction);
+            setType(transaction.type);
+            setCategory(transaction.category || '');
+            setAmount(transaction.amount);
+        } else {
+            setEditingTransaction(null);
+            setType('income');
+            setCategory('');
+            setAmount('');
+        }
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setEditingTransaction(null);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (editingTransaction) {
+            const { _id } = editingTransaction;
+            await axios.put(`http://localhost:5001/transactions/${_id}`, {
+                type,
+                category,
+                amount: Number(amount),
+            });
+        } else {
+            await addTransaction(e);
+        }
+        fetchTransactions();
+        closeModal();
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === 'type') {
+            // If type is changed to 'income', reset the category
+            if (value === 'income') {
+                setCategory('');
+            }
+            setType(value);
+        } else if (name === 'category') {
+            setCategory(value);
+        } else if (name === 'amount') {
+            setAmount(value);
+        }
+
+        // If editing a transaction, we update the editing state as well
+        if (editingTransaction) {
+            setEditingTransaction((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const goBack = () => {
+        navigate('/'); 
+    };
+
     return (
         <div className="transactions-container">
+            <button onClick={goBack} className="btn btn-outline-secondary mb-4">Back to Dashboard</button>
+
             <h3 className="mb-4">User Transactions</h3>
 
-            {/* Add Transaction Form */}
-            <div className="card shadow-sm mb-4">
-                <div className="card-body">
-                    <h5 className="card-title mb-3">Add New Transaction</h5>
-                    <form onSubmit={addTransaction} className="row g-3">
-                        <div className="col-md-3">
-                            <select
-                                className="form-select"
-                                value={type}
-                                onChange={e => setType(e.target.value)}
-                            >
-                                <option value="income">Income</option>
-                                <option value="expense">Expense</option>
-                            </select>
-                        </div>
+            <button onClick={() => openModal()} className="btn btn-primary mb-4">
+                Add Transaction
+            </button>
 
-                        {type === 'expense' && (
-                            <div className="col-md-3">
+            {/* Add/Edit Transaction Modal */}
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <button className="modal-close" onClick={closeModal}>
+                            &times;
+                        </button>
+                        <h3>{editingTransaction ? 'Edit' : 'Add'} Transaction</h3>
+                        <form className="user-form" onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Type</label>
+                                <select
+                                    className="form-select"
+                                    name="type"
+                                    value={type}
+                                    onChange={handleChange}
+                                >
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+                            </div>
+
+                            {type === 'expense' && (
+                                <div className="form-group">
+                                    <label>Category</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="category"
+                                        value={category}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <label>Amount</label>
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="form-control"
-                                    placeholder="Category"
-                                    value={category}
-                                    onChange={e => setCategory(e.target.value)}
+                                    name="amount"
+                                    value={amount}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
-                        )}
 
-                        <div className="col-md-3">
-                            <input
-                                type="number"
-                                className="form-control"
-                                placeholder="Amount"
-                                value={amount}
-                                onChange={e => setAmount(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <div className="col-md-3 d-grid">
-                            <button type="submit" className="btn btn-success">
-                                Add Transaction
-                            </button>
-                        </div>
-                    </form>
+                            <div className="d-flex justify-content-end">
+                                <button type="submit" className="btn btn-success">
+                                    {editingTransaction ? 'Save Changes' : 'Add Transaction'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary ms-2"
+                                    onClick={closeModal}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Transactions List */}
             <div className="card shadow-sm">
@@ -98,7 +184,7 @@ const Transactions = () => {
                         <p className="text-muted">No transactions found.</p>
                     ) : (
                         <ul className="list-group">
-                            {transactions.map(t => (
+                            {transactions.map((t) => (
                                 <li
                                     key={t._id}
                                     className="list-group-item d-flex justify-content-between align-items-center"
@@ -120,12 +206,20 @@ const Transactions = () => {
                                             {new Date(t.date).toLocaleDateString()}
                                         </small>
                                     </div>
-                                    <button
-                                        onClick={() => deleteTransaction(t._id)}
-                                        className="btn btn-sm btn-outline-danger"
-                                    >
-                                        Delete
-                                    </button>
+                                    <div>
+                                        <button
+                                            onClick={() => openModal(t)}
+                                            className="btn btn-sm btn-info me-2"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => deleteTransaction(t._id)}
+                                            className="btn btn-sm btn-danger"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
