@@ -112,7 +112,7 @@ app.get('/chart-data', async (req, res) => {
 });
 
 
-const PORT = 5000;
+const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`Backend server is running on port ${PORT}`);
 });

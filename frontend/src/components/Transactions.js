@@ -14,20 +14,20 @@ const Transactions = () => {
     }, [userId]);
 
     const fetchTransactions = async () => {
-        const result = await axios.get(`http://localhost:5000/users/${userId}/transactions`);
+        const result = await axios.get(`http://localhost:5001/users/${userId}/transactions`);
         setTransactions(result.data);
     };
 
     const addTransaction = async (e) => {
         e.preventDefault();
-        await axios.post('http://localhost:5000/transactions', { userId, type, category, amount: Number(amount) });
+        await axios.post('http://localhost:5001/transactions', { userId, type, category, amount: Number(amount) });
         setCategory('');
         setAmount('');
         fetchTransactions();
     };
 
     const deleteTransaction = async (id) => {
-        await axios.delete(`http://localhost:5000/transactions/${id}`);
+        await axios.delete(`http://localhost:5001/transactions/${id}`);
         fetchTransactions();
     };
 

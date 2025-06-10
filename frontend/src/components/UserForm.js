@@ -10,7 +10,7 @@ const UserForm = () => {
 
     useEffect(() => {
         if (id) {
-            axios.get('http://localhost:5000/users').then(response => {
+            axios.get('http://localhost:5001/users').then(response => {
                 const user = response.data.find(u => u._id === id);
                 if (user) {
                     setName(user.name);
@@ -25,9 +25,9 @@ const UserForm = () => {
         const userData = { name, email };
 
         if (id) {
-            await axios.put(`http://localhost:5000/users/${id}`, userData);
+            await axios.put(`http://localhost:5001/users/${id}`, userData);
         } else {
-            await axios.post('http://localhost:5000/users', userData);
+            await axios.post('http://localhost:5001/users', userData);
         }
         navigate('/');
     };

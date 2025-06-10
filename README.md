@@ -21,7 +21,7 @@ This is a full-stack application for managing user expenses. It includes feature
     ```
 
 5.  - The frontend will be available at `http://localhost:3000`.
-    - The backend server will run on `http://localhost:5000`.
+    - The backend server will run on `http://localhost:5001`.
 
 ## API Endpoints
 
