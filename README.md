@@ -2,6 +2,13 @@
 
 This is a full-stack application for managing user expenses. It includes features for user registration, transaction tracking, and data visualization.
 
+Dashboard:
+<img width="1136" alt="image" src="https://github.com/user-attachments/assets/1b3c2e17-4e8f-40db-9823-c498d26dda85" />
+
+Transaction:
+<img width="1136" alt="image" src="https://github.com/user-attachments/assets/e756ad98-2395-436a-89ac-c12f72bd65c0" />
+
+
 ## Tech Stack
 
 -   **Frontend**: ReactJS
