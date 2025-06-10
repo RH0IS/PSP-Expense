@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import './Dashboard.css'; 
+import UserForm from './UserForm';  // Import UserForm component
+import './styles/Dashboard.css';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14', '#343a40'];
 
 const Dashboard = () => {
     const [users, setUsers] = useState([]);
     const [chartData, setChartData] = useState({ expenses: [], income: 0 });
+    const [showUserForm, setShowUserForm] = useState(false);
+    const [editingUserId, setEditingUserId] = useState(null);
 
     useEffect(() => {
         fetchUsers();
@@ -16,17 +19,45 @@ const Dashboard = () => {
     }, []);
 
     const fetchUsers = async () => {
-        const result = await axios.get('http://localhost:5001/users');
-        setUsers(result.data);
+        try {
+            const result = await axios.get('http://localhost:5001/users');
+            setUsers(result.data);
+        } catch (error) {
+            console.error('Failed to fetch users:', error);
+        }
     };
 
     const fetchChartData = async () => {
-        const result = await axios.get('http://localhost:5001/chart-data');
-        setChartData(result.data);
+        try {
+            const result = await axios.get('http://localhost:5001/chart-data');
+            setChartData(result.data);
+        } catch (error) {
+            console.error('Failed to fetch chart data:', error);
+        }
     };
 
     const deleteUser = async (id) => {
-        await axios.delete(`http://localhost:5001/users/${id}`);
+        if (!window.confirm('Are you sure you want to delete this user?')) return;
+        try {
+            await axios.delete(`http://localhost:5001/users/${id}`);
+            fetchUsers();
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+        }
+    };
+
+    const openAddUserForm = () => {
+        setEditingUserId(null);
+        setShowUserForm(true);
+    };
+
+    const openEditUserForm = (id) => {
+        setEditingUserId(id);
+        setShowUserForm(true);
+    };
+
+    const closeUserForm = () => {
+        setShowUserForm(false);
         fetchUsers();
     };
 
@@ -38,26 +69,53 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container">
             <header>
-                <h2 className="dashboard-title">Expense Management Dashboard</h2>
-                <Link to="/add-user" className="btn btn-primary mb-3">Add New User</Link>
+                <h2 className="dashboard-title">PSP EXPENSE MANAGEMENT</h2>
             </header>
 
-            {/* Pie Chart */}
+            {/* Pie Chart with Legend */}
             <section className="chart-section">
                 <h4>All Users - Income vs. Expenses by Category</h4>
-                <PieChart width={500} height={500}>
-                    <Pie data={chartDisplayData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={180} fill="#8884d8">
-                        {chartDisplayData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip />
-                </PieChart>
-            </section>
+                <div className="chart-wrapper">
+                    <PieChart width={300} height={300}>
+                        <Pie
+                            data={chartDisplayData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            fill="#8884d8"
+                        >
+                            {chartDisplayData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                    </PieChart>
 
-            <hr />
+                    {/* Legend */}
+                    <ul className="custom-legend">
+                        {chartDisplayData.map((entry, index) => (
+                            <li key={`legend-${index}`}>
+                                <span
+                                    className="legend-color"
+                                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                                ></span>
+                                {entry.name}: ${entry.value}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
 
             {/* Users Table */}
             <section className="users-table-section">
-                <h3>All Users</h3>
+                <h3>
+                    All Users
+                    <button onClick={openAddUserForm} className="btn btn-primary mb-3 ml-3">
+                        Add New User
+                    </button>
+                </h3>
                 <table className="table table-hover">
                     <thead>
                         <tr>
@@ -74,7 +132,7 @@ const Dashboard = () => {
                                 <td>${user.totalIncome}</td>
                                 <td>${user.totalExpense}</td>
                                 <td>
-                                    <Link to={`/edit-user/${user._id}`} className="btn btn-sm btn-info">Edit</Link>
+                                    <button onClick={() => openEditUserForm(user._id)} className="btn btn-sm btn-info">Edit</button>
                                     <button onClick={() => deleteUser(user._id)} className="btn btn-sm btn-danger ml-2">Delete</button>
                                 </td>
                             </tr>
@@ -82,6 +140,16 @@ const Dashboard = () => {
                     </tbody>
                 </table>
             </section>
+
+            {/* User Form Modal */}
+            {showUserForm && (
+                <div className="modal-overlay" role="dialog" aria-modal="true">
+                    <div className="modal-content">
+                        <button aria-label="Close modal" className="modal-close" onClick={closeUserForm}>×</button>
+                        <UserForm id={editingUserId} onClose={closeUserForm} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
